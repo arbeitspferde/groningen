@@ -18,6 +18,7 @@ package org.arbeitspferde.groningen.experimentdb.jvmflags;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
 
 import org.arbeitspferde.groningen.proto.GroningenConfigProto;
 
@@ -163,6 +164,9 @@ public enum JvmFlag {
       .add(USE_SERIAL_GC)
       .build();
 
+  private static final ImmutableSortedSet<JvmFlag> NON_GC_MODE_FLAGS = ImmutableSortedSet.copyOf(
+      Sets.difference(Sets.newHashSet(JvmFlag.values()), GC_MODE_FLAGS));
+
   /**
    * Construct a new boolean flag.
    *
@@ -287,6 +291,10 @@ public enum JvmFlag {
    */
   public static ImmutableSortedSet<JvmFlag> getGcModeArguments() {
     return GC_MODE_FLAGS;
+  }
+
+  public static ImmutableSortedSet<JvmFlag> getNonGcModeArguments() {
+    return NON_GC_MODE_FLAGS;
   }
 
   /**

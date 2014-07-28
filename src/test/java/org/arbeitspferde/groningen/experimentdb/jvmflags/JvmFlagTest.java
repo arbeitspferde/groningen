@@ -18,8 +18,6 @@ package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 import junit.framework.TestCase;
 
-import java.util.List;
-
 /**
  * Tests for {@link JvmFlag}.
  */

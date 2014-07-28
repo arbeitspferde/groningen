@@ -18,7 +18,6 @@ package org.arbeitspferde.groningen.hypothesizer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.google.inject.Inject;
 
@@ -58,7 +57,6 @@ import org.uncommons.watchmaker.framework.termination.Stagnation;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -72,27 +70,9 @@ import java.util.logging.Logger;
  */
 @PipelineScoped
 public class Hypothesizer extends ProfilingRunnable {
-
-  /** Contains all non-GC mode arguments */
-  @VisibleForTesting
-  static final List<JvmFlag> ARGUMENTS;
-
-  // Store non-GC mode arguments in ARGUMENTS
-  static {
-    // TODO(team): Reduce level of static initialization.
-
-    Set<JvmFlag> gcModes = Sets.newHashSet(JvmFlag.getGcModeArguments());
-    ARGUMENTS = Lists.newArrayList();
-    for (JvmFlag argument : JvmFlag.values()) {
-      if (!gcModes.contains(argument)) {
-        ARGUMENTS.add(argument);
-      }
-    }
-  }
-
   // Chromosome size is the number of arguments plus the GC mode.
   @VisibleForTesting
-  static final int CHROMOSOME_SIZE = ARGUMENTS.size() + 1;
+  private static final int CHROMOSOME_SIZE = JvmFlag.getNonGcModeArguments().size() + 1;
 
   /** Logger for this class */
   private static final Logger logger = Logger.getLogger(Hypothesizer.class.getCanonicalName());
@@ -331,12 +311,12 @@ public class Hypothesizer extends ProfilingRunnable {
     individual.add(supportedGcModes.indexOf(JvmFlag.getGcModeArgument(commandLine.getGcMode())));
 
     // Add the rest of the non-GC mode argument values.
-    for (JvmFlag argument : ARGUMENTS) {
+    for (JvmFlag argument : JvmFlag.getNonGcModeArguments()) {
       long value = commandLine.getValue(argument);
       if (value > Integer.MAX_VALUE) {
         logger.log(Level.SEVERE, String.format("Value %s is larger than integer max for %s.",
             value, argument));
-        throw new RuntimeException("Command-line argument value is larger than integer max.");
+        throw new IllegalArgumentException("Command-line argument value is larger than integer max.");
       }
       individual.add((int) value);
     }
@@ -382,81 +362,7 @@ public class Hypothesizer extends ProfilingRunnable {
 
       for (int i = 1; i < individual.size(); ++i) {
         final int value = individual.get(i);
-
-        switch (ARGUMENTS.get(i - 1)) {
-
-          case ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR:
-            builder.withValue(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, value);
-            break;
-          case CMS_EXP_AVG_FACTOR:
-            builder.withValue(JvmFlag.CMS_EXP_AVG_FACTOR, value);
-            break;
-          case CMS_INCREMENTAL_DUTY_CYCLE:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE, value);
-            break;
-          case CMS_INCREMENTAL_DUTY_CYCLE_MIN:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE_MIN, value);
-            break;
-          case CMS_INCREMENTAL_OFFSET:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_OFFSET, value);
-            break;
-          case CMS_INCREMENTAL_SAFETY_FACTOR:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_SAFETY_FACTOR, value);
-            break;
-          case CMS_INITIATING_OCCUPANCY_FRACTION:
-            builder.withValue(JvmFlag.CMS_INITIATING_OCCUPANCY_FRACTION, value);
-            break;
-          case GC_TIME_RATIO:
-            builder.withValue(JvmFlag.GC_TIME_RATIO, value);
-            break;
-          case HEAP_SIZE:
-            builder.withValue(JvmFlag.HEAP_SIZE, value);
-            break;
-          case MAX_GC_PAUSE_MILLIS:
-            builder.withValue(JvmFlag.MAX_GC_PAUSE_MILLIS, value);
-            break;
-          case MAX_HEAP_FREE_RATIO:
-            builder.withValue(JvmFlag.MAX_HEAP_FREE_RATIO, value);
-            break;
-          case MAX_NEW_SIZE:
-            builder.withValue(JvmFlag.MAX_NEW_SIZE, value);
-            break;
-          case MIN_HEAP_FREE_RATIO:
-            builder.withValue(JvmFlag.MIN_HEAP_FREE_RATIO, value);
-            break;
-          case NEW_RATIO:
-            builder.withValue(JvmFlag.NEW_RATIO, value);
-            break;
-          case NEW_SIZE:
-            builder.withValue(JvmFlag.NEW_SIZE, value);
-            break;
-          case PARALLEL_GC_THREADS:
-            builder.withValue(JvmFlag.PARALLEL_GC_THREADS, value);
-            break;
-          case SURVIVOR_RATIO:
-            builder.withValue(JvmFlag.SURVIVOR_RATIO, value);
-            break;
-          case TENURED_GENERATION_SIZE_INCREMENT:
-            builder.withValue(JvmFlag.TENURED_GENERATION_SIZE_INCREMENT, value);
-            break;
-          case YOUNG_GENERATION_SIZE_INCREMENT:
-            builder.withValue(JvmFlag.YOUNG_GENERATION_SIZE_INCREMENT, value);
-            break;
-          case SOFT_REF_LRU_POLICY_MS_PER_MB:
-            builder.withValue(JvmFlag.SOFT_REF_LRU_POLICY_MS_PER_MB, value);
-            break;
-          case CMS_INCREMENTAL_MODE:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_MODE, value);
-            break;
-          case CMS_INCREMENTAL_PACING:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_PACING, value);
-            break;
-          case USE_CMS_INITIATING_OCCUPANCY_ONLY:
-            builder.withValue(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY, value);
-            break;
-          default:
-            throw new RuntimeException("Invalid command-line argument.");
-        }
+        builder.withValue(JvmFlag.values()[i], value);
       }
 
       final JvmFlagSet jvmFlagSet = builder.build();
@@ -499,7 +405,7 @@ public class Hypothesizer extends ProfilingRunnable {
       final SearchSpaceBundle bundle = config.getJvmSearchSpaceRestriction();
 
       // Add values for the rest of the arguments.
-      for (final JvmFlag argument : ARGUMENTS) {
+      for (final JvmFlag argument : JvmFlag.getNonGcModeArguments()) {
         final SearchSpaceEntry entry = bundle.getSearchSpace(argument);
         final int value = generateRandomNumber(entry, rng);
         logger.info(String.format("Search space for %s: floor=%s; ceiling=%s; step=%s; value=%s",
@@ -611,7 +517,7 @@ public class Hypothesizer extends ProfilingRunnable {
             if (i == 0) {
               mutatedCandidate.add(rng.nextInt(supportedGcModes.size()));
             } else {
-              SearchSpaceEntry entry = bundle.getSearchSpace(ARGUMENTS.get(i - 1));
+              SearchSpaceEntry entry = bundle.getSearchSpace(JvmFlag.values()[i - 1]);
               mutatedCandidate.add(generateRandomNumber(entry, rng));
             }
           } else {
