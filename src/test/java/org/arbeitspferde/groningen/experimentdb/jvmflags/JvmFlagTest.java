@@ -64,13 +64,6 @@ public class JvmFlagTest extends TestCase {
     }
   }
 
-  public void test_getGcModeArgument_EmitsExpected() {
-    assertEquals(JvmFlag.USE_CONC_MARK_SWEEP_GC, JvmFlag.getGcModeArgument(GcMode.CMS));
-    assertEquals(JvmFlag.USE_PARALLEL_GC, JvmFlag.getGcModeArgument(GcMode.PARALLEL));
-    assertEquals(JvmFlag.USE_PARALLEL_OLD_GC, JvmFlag.getGcModeArgument(GcMode.PARALLEL_OLD));
-    assertEquals(JvmFlag.USE_SERIAL_GC, JvmFlag.getGcModeArgument(GcMode.SERIAL));
-  }
-
   public void test_asAcceptableValuesString_MAX_NEW_SIZE() {
     final String actual = JvmFlag.MAX_NEW_SIZE.asAcceptableValuesString();
 

@@ -74,25 +74,22 @@ import java.util.logging.Logger;
 public class Hypothesizer extends ProfilingRunnable {
 
   /** Contains all non-GC mode arguments */
-  @VisibleForTesting
-  static final List<JvmFlag> ARGUMENTS;
+//  @VisibleForTesting
+//  static final List<JvmFlag> ARGUMENTS;
 
-  // Store non-GC mode arguments in ARGUMENTS
-  static {
-    // TODO(team): Reduce level of static initialization.
-
-    Set<JvmFlag> gcModes = Sets.newHashSet(JvmFlag.getGcModeArguments());
-    ARGUMENTS = Lists.newArrayList();
-    for (JvmFlag argument : JvmFlag.values()) {
-      if (!gcModes.contains(argument)) {
-        ARGUMENTS.add(argument);
-      }
-    }
-  }
-
-  // Chromosome size is the number of arguments plus the GC mode.
-  @VisibleForTesting
-  static final int CHROMOSOME_SIZE = ARGUMENTS.size() + 1;
+//  // Store non-GC mode arguments in ARGUMENTS
+//  static {
+//    // TODO(team): Reduce level of static initialization.
+//
+//    Set<JvmFlag> gcModes = Sets.newHashSet(JvmFlag.getGcModeArguments());
+//    ARGUMENTS = Lists.newArrayList();
+//    for (JvmFlag argument : JvmFlag.values()) {
+//      if (!gcModes.contains(argument)) {
+//        ARGUMENTS.add(argument);
+//      }
+//    }
+//  }
+  private static final int CHROMOSOME_SIZE = JvmFlag.values().length;
 
   /** Logger for this class */
   private static final Logger logger = Logger.getLogger(Hypothesizer.class.getCanonicalName());
@@ -103,7 +100,7 @@ public class Hypothesizer extends ProfilingRunnable {
 
   private GroningenConfig config;
 
-  private final List<JvmFlag> supportedGcModes = Lists.newArrayList();
+  // private final List<JvmFlag> supportedGcModes = Lists.newArrayList();
 
   /**
    * population size is fixed once we instantiate the ga engine so it makes
@@ -211,27 +208,7 @@ public class Hypothesizer extends ProfilingRunnable {
           + "checkpoint; starting from scratch ...");
     }
 
-    initializeSupportedGcModes();
-
     initializeEvolutionEngine(lastExperiment);
-  }
-
-  private void initializeSupportedGcModes() {
-    SortedSet<JvmFlag> gcModes = JvmFlag.getGcModeArguments();
-
-    SearchSpaceBundle bundle = config.getJvmSearchSpaceRestriction();
-    for (JvmFlag gcMode : gcModes) {
-      SearchSpaceEntry entry = bundle.getSearchSpace(gcMode);
-      // TODO(team): Refactor this into a formal test and extract this baked state logic assumption.
-      if (entry.getCeiling() > 0) {
-        supportedGcModes.add(gcMode);
-      }
-    }
-
-    if (supportedGcModes.isEmpty()) {
-      throw new RuntimeException("No GC mode specified in the config.");
-    }
-    logger.info(String.format("Allowed GC modes: %s", supportedGcModes));
   }
 
   private void initializeEvolutionEngine(Experiment lastExperiment) {
@@ -320,19 +297,14 @@ public class Hypothesizer extends ProfilingRunnable {
   }
 
   /**
-   * Creates an individual from the command-line parameters. The GC mode
-   * argument is converted to an enum.
+   * Creates an individual from the command-line parameters.
    */
   private List<Integer> loadIndividual(CommandLine commandLine) {
-    List<Integer> individual = Lists.newArrayList();
-
-    // Add the GC mode argument value as the first object.
-    // TODO(team): Swap this to the ordinal position of the flag.
-    individual.add(supportedGcModes.indexOf(JvmFlag.getGcModeArgument(commandLine.getGcMode())));
-
-    // Add the rest of the non-GC mode argument values.
-    for (JvmFlag argument : ARGUMENTS) {
+    List<Integer> individual = Lists.newArrayList(CHROMOSOME_SIZE);
+    for (JvmFlag argument : JvmFlag.values()) {
       long value = commandLine.getValue(argument);
+      // TODO(team): Refactor to take advantage of the type system to prevent an illegal state as
+      // such.
       if (value > Integer.MAX_VALUE) {
         logger.log(Level.SEVERE, String.format("Value %s is larger than integer max for %s.",
             value, argument));
@@ -362,101 +334,10 @@ public class Hypothesizer extends ProfilingRunnable {
 
       final JvmFlagSet.Builder builder = JvmFlagSet.builder();
 
-      // First gene is the GC mode.
-      switch (supportedGcModes.get(individual.get(0))) {
-        case USE_CONC_MARK_SWEEP_GC:
-          builder.withValue(JvmFlag.USE_CONC_MARK_SWEEP_GC, 1L);
-          break;
-        case USE_PARALLEL_GC:
-          builder.withValue(JvmFlag.USE_PARALLEL_GC, 1L);
-          break;
-        case USE_PARALLEL_OLD_GC:
-          builder.withValue(JvmFlag.USE_PARALLEL_OLD_GC, 1L);
-          break;
-        case USE_SERIAL_GC:
-          builder.withValue(JvmFlag.USE_SERIAL_GC, 1L);
-          break;
-        default:
-          throw new RuntimeException("Invalid GC mode.");
-      }
-
-      for (int i = 1; i < individual.size(); ++i) {
+      for (int i = 0; i < individual.size(); ++i) {
         final int value = individual.get(i);
 
-        switch (ARGUMENTS.get(i - 1)) {
-
-          case ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR:
-            builder.withValue(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, value);
-            break;
-          case CMS_EXP_AVG_FACTOR:
-            builder.withValue(JvmFlag.CMS_EXP_AVG_FACTOR, value);
-            break;
-          case CMS_INCREMENTAL_DUTY_CYCLE:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE, value);
-            break;
-          case CMS_INCREMENTAL_DUTY_CYCLE_MIN:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE_MIN, value);
-            break;
-          case CMS_INCREMENTAL_OFFSET:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_OFFSET, value);
-            break;
-          case CMS_INCREMENTAL_SAFETY_FACTOR:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_SAFETY_FACTOR, value);
-            break;
-          case CMS_INITIATING_OCCUPANCY_FRACTION:
-            builder.withValue(JvmFlag.CMS_INITIATING_OCCUPANCY_FRACTION, value);
-            break;
-          case GC_TIME_RATIO:
-            builder.withValue(JvmFlag.GC_TIME_RATIO, value);
-            break;
-          case HEAP_SIZE:
-            builder.withValue(JvmFlag.HEAP_SIZE, value);
-            break;
-          case MAX_GC_PAUSE_MILLIS:
-            builder.withValue(JvmFlag.MAX_GC_PAUSE_MILLIS, value);
-            break;
-          case MAX_HEAP_FREE_RATIO:
-            builder.withValue(JvmFlag.MAX_HEAP_FREE_RATIO, value);
-            break;
-          case MAX_NEW_SIZE:
-            builder.withValue(JvmFlag.MAX_NEW_SIZE, value);
-            break;
-          case MIN_HEAP_FREE_RATIO:
-            builder.withValue(JvmFlag.MIN_HEAP_FREE_RATIO, value);
-            break;
-          case NEW_RATIO:
-            builder.withValue(JvmFlag.NEW_RATIO, value);
-            break;
-          case NEW_SIZE:
-            builder.withValue(JvmFlag.NEW_SIZE, value);
-            break;
-          case PARALLEL_GC_THREADS:
-            builder.withValue(JvmFlag.PARALLEL_GC_THREADS, value);
-            break;
-          case SURVIVOR_RATIO:
-            builder.withValue(JvmFlag.SURVIVOR_RATIO, value);
-            break;
-          case TENURED_GENERATION_SIZE_INCREMENT:
-            builder.withValue(JvmFlag.TENURED_GENERATION_SIZE_INCREMENT, value);
-            break;
-          case YOUNG_GENERATION_SIZE_INCREMENT:
-            builder.withValue(JvmFlag.YOUNG_GENERATION_SIZE_INCREMENT, value);
-            break;
-          case SOFT_REF_LRU_POLICY_MS_PER_MB:
-            builder.withValue(JvmFlag.SOFT_REF_LRU_POLICY_MS_PER_MB, value);
-            break;
-          case CMS_INCREMENTAL_MODE:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_MODE, value);
-            break;
-          case CMS_INCREMENTAL_PACING:
-            builder.withValue(JvmFlag.CMS_INCREMENTAL_PACING, value);
-            break;
-          case USE_CMS_INITIATING_OCCUPANCY_ONLY:
-            builder.withValue(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY, value);
-            break;
-          default:
-            throw new RuntimeException("Invalid command-line argument.");
-        }
+        builder.withValue(JvmFlag.values()[i], value);
       }
 
       final JvmFlagSet jvmFlagSet = builder.build();
@@ -493,13 +374,10 @@ public class Hypothesizer extends ProfilingRunnable {
       }
       final List<Integer> individual = Lists.newArrayListWithExpectedSize(CHROMOSOME_SIZE);
 
-      // Pick a GC mode at random, and add it as the first object.
-      individual.add(rng.nextInt(supportedGcModes.size()));
-
       final SearchSpaceBundle bundle = config.getJvmSearchSpaceRestriction();
 
       // Add values for the rest of the arguments.
-      for (final JvmFlag argument : ARGUMENTS) {
+      for (final JvmFlag argument : JvmFlag.values()) {
         final SearchSpaceEntry entry = bundle.getSearchSpace(argument);
         final int value = generateRandomNumber(entry, rng);
         logger.info(String.format("Search space for %s: floor=%s; ceiling=%s; step=%s; value=%s",
@@ -608,12 +486,8 @@ public class Hypothesizer extends ProfilingRunnable {
         List<Integer> mutatedCandidate = Lists.newArrayListWithCapacity(selectedCandidate.size());
         for (int i = 0; i < selectedCandidate.size(); ++i) {
           if (probability.nextValue().nextEvent(rng)) {
-            if (i == 0) {
-              mutatedCandidate.add(rng.nextInt(supportedGcModes.size()));
-            } else {
-              SearchSpaceEntry entry = bundle.getSearchSpace(ARGUMENTS.get(i - 1));
-              mutatedCandidate.add(generateRandomNumber(entry, rng));
-            }
+            SearchSpaceEntry entry = bundle.getSearchSpace(JvmFlag.values()[i]);
+            mutatedCandidate.add(generateRandomNumber(entry, rng));
           } else {
             mutatedCandidate.add(selectedCandidate.get(i));
           }

@@ -20,7 +20,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
-import org.arbeitspferde.groningen.experimentdb.jvmflags.GcMode;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 
@@ -216,27 +215,6 @@ public class CommandLine {
 
   public boolean getUseSerialGC() {
     return getValue(JvmFlag.USE_SERIAL_GC) == 1;
-  }
-
-  /**
-   * Returns the garbage collection mode chosen in this command line.
-   *
-   * @return GC mode.
-   * @throws RuntimeException If no GC mode is chosen.
-   */
-  public GcMode getGcMode() {
-    if (getUseConcMarkSweepGC()) {
-      return GcMode.CMS;
-    } else if (getUseParallelGC()) {
-      return GcMode.PARALLEL;
-    } else if (getUseParallelOldGC()) {
-      return GcMode.PARALLEL_OLD;
-    } else if (getUseSerialGC()) {
-      return GcMode.SERIAL;
-    } else {
-      // TODO(team): more debug info.
-      throw new IllegalStateException("No GC mode found.");
-    }
   }
 
   /**

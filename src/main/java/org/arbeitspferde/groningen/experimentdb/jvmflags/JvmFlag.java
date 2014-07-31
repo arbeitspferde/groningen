@@ -108,7 +108,9 @@ public enum JvmFlag {
 
   USE_PARALLEL_OLD_GC("UseParallelOldGC", HotSpotFlagType.UNSTABLE),
 
-  USE_SERIAL_GC("UseSerialGC", HotSpotFlagType.UNSTABLE);
+  USE_SERIAL_GC("UseSerialGC", HotSpotFlagType.UNSTABLE),
+
+  USE_PAR_NEW_GC("UseParNewGC", HotSpotFlagType.UNSTABLE);  // XXX: ENSURE LINKED IN EVERYWHERE!
 
   /**
    * The human-readable flag name that excludes the flag-specific argument
@@ -155,13 +157,6 @@ public enum JvmFlag {
    * The range of values allowed.
    */
   private final Range<Long> acceptableValueRange;
-
-  private static final ImmutableSortedSet<JvmFlag> GC_MODE_FLAGS = ImmutableSortedSet.<JvmFlag>naturalOrder()
-      .add(USE_CONC_MARK_SWEEP_GC)
-      .add(USE_PARALLEL_GC)
-      .add(USE_PARALLEL_OLD_GC)
-      .add(USE_SERIAL_GC)
-      .build();
 
   /**
    * Construct a new boolean flag.
@@ -278,51 +273,5 @@ public enum JvmFlag {
    */
   public void validate(final Long proposedValue) throws IllegalArgumentException {
     getFormatter().validate(this, proposedValue);
-  }
-
-  /**
-   * Returns the GC mode {@link JvmFlag} instances.
-   *
-   * @return List of GC modes.
-   */
-  public static ImmutableSortedSet<JvmFlag> getGcModeArguments() {
-    return GC_MODE_FLAGS;
-  }
-
-  /**
-   * Returns the GC mode command-line argument for the given GC mode.
-   */
-  public static JvmFlag getGcModeArgument(final GcMode gcMode) {
-    Preconditions.checkNotNull(gcMode, "gcMode should not be null.");
-
-    switch (gcMode) {
-      case CMS:
-        return USE_CONC_MARK_SWEEP_GC;
-      case PARALLEL:
-        return USE_PARALLEL_GC;
-      case PARALLEL_OLD:
-        return USE_PARALLEL_OLD_GC;
-      case SERIAL:
-        return USE_SERIAL_GC;
-      default:
-        throw new IllegalArgumentException("Invalid GC mode: " + gcMode);
-    }
-  }
-
-  public static JvmFlag getGcModeArgument(final GroningenConfigProto.ProgramConfiguration.JvmSearchSpace.GcMode mode) {
-    Preconditions.checkNotNull(mode, "mode should not be null.");
-    // initialize the enum mappings
-    switch (mode) {
-      case USE_CONC_MARK_SWEEP:
-        return USE_CONC_MARK_SWEEP_GC;
-      case USE_PARALLEL:
-        return USE_PARALLEL_GC;
-      case USE_PARALLEL_OLD:
-        return USE_PARALLEL_OLD_GC;
-      case USE_SERIAL:
-        return USE_SERIAL_GC;
-      default:
-        throw new IllegalArgumentException("Invalid GC mode: " + mode);
-    }
   }
 }

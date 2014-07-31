@@ -33,7 +33,6 @@ public class ProtoBufSearchSpaceBundleTest extends TestCase {
 
   public void testConstructionForDefaultWithNoRequireAll() throws Exception {
     JvmSearchSpace searchSpace = JvmSearchSpace.newBuilder()
-      .addGcMode(JvmSearchSpace.GcMode.USE_CONC_MARK_SWEEP)
       .build();
 
     ProtoBufSearchSpaceBundle bundle = new ProtoBufSearchSpaceBundle(searchSpace, false);
@@ -54,7 +53,6 @@ public class ProtoBufSearchSpaceBundleTest extends TestCase {
 
   public void testConstructionInt64RangesWithRangesAndNoRequireAll() throws Exception {
     JvmSearchSpace searchSpace = JvmSearchSpace.newBuilder()
-      .addGcMode(JvmSearchSpace.GcMode.USE_CONC_MARK_SWEEP)
       .setGcTimeRatio(JvmSearchSpace.Int64Range.newBuilder()
           .setFloor(0L)
           .setCeiling(100L)
@@ -95,7 +93,6 @@ public class ProtoBufSearchSpaceBundleTest extends TestCase {
 
   public void testConstructionInt64RangesWithValueAndNoRequireAll() throws Exception {
     JvmSearchSpace searchSpace = JvmSearchSpace.newBuilder()
-      .addGcMode(JvmSearchSpace.GcMode.USE_CONC_MARK_SWEEP)
       .setGcTimeRatio(JvmSearchSpace.Int64Range.newBuilder()
           .setValue(50L)
           .build())
@@ -112,7 +109,6 @@ public class ProtoBufSearchSpaceBundleTest extends TestCase {
 
   public void testConstructionBooleanWithValueAndNoRequireAll() throws Exception {
     JvmSearchSpace searchSpace = JvmSearchSpace.newBuilder()
-      .addGcMode(JvmSearchSpace.GcMode.USE_CONC_MARK_SWEEP)
       .setCmsIncrementalPacing(false)
       .build();
 
@@ -200,16 +196,16 @@ public class ProtoBufSearchSpaceBundleTest extends TestCase {
                     JvmSearchSpace.USE_CMS_INITIATING_OCCUPANCY_ONLY_FIELD_NUMBER))
             .put(JvmFlag.USE_CONC_MARK_SWEEP_GC,
                 JvmSearchSpace.getDescriptor().findFieldByNumber(
-                    JvmSearchSpace.GC_MODE_FIELD_NUMBER))
+                    JvmSearchSpace.USE_CONCURRENT_MARK_SWEEP_GC_FIELD_NUMBER))
             .put(JvmFlag.USE_PARALLEL_GC,
                 JvmSearchSpace.getDescriptor().findFieldByNumber(
-                    JvmSearchSpace.GC_MODE_FIELD_NUMBER))
+                    JvmSearchSpace.USE_PARALLEL_GC_FIELD_NUMBER))
             .put(JvmFlag.USE_PARALLEL_OLD_GC,
                 JvmSearchSpace.getDescriptor().findFieldByNumber(
-                    JvmSearchSpace.GC_MODE_FIELD_NUMBER))
+                    JvmSearchSpace.USE_PARALLEL_OLD_GC_FIELD_NUMBER))
             .put(JvmFlag.USE_SERIAL_GC,
                  JvmSearchSpace.getDescriptor().findFieldByNumber(
-                    JvmSearchSpace.GC_MODE_FIELD_NUMBER))
+                    JvmSearchSpace.USE_SERIAL_GC_FIELD_NUMBER))
             .put(JvmFlag.HEAP_SIZE,
                  JvmSearchSpace.getDescriptor().findFieldByNumber(
                    JvmSearchSpace.HEAP_SIZE_FIELD_NUMBER))
@@ -223,15 +219,6 @@ public class ProtoBufSearchSpaceBundleTest extends TestCase {
             .add(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY)
             .build();
 
-    ImmutableMap<JvmFlag, JvmSearchSpace.GcMode> gcModeMap =
-        ImmutableMap.<JvmFlag, JvmSearchSpace.GcMode>builder()
-            .put(JvmFlag.USE_CONC_MARK_SWEEP_GC,
-                JvmSearchSpace.GcMode.USE_CONC_MARK_SWEEP)
-            .put(JvmFlag.USE_PARALLEL_GC, JvmSearchSpace.GcMode.USE_PARALLEL)
-            .put(JvmFlag.USE_PARALLEL_OLD_GC, JvmSearchSpace.GcMode.USE_PARALLEL_OLD)
-            .put(JvmFlag.USE_SERIAL_GC, JvmSearchSpace.GcMode.USE_SERIAL)
-            .build();
-
     // all CommandLineArguments start at 0 and go to higher than 2 - this is a little brittle
     // though
     JvmSearchSpace.Int64Range intRange = Int64Range.newBuilder()
@@ -241,23 +228,11 @@ public class ProtoBufSearchSpaceBundleTest extends TestCase {
         .build();
 
     for (JvmFlag missingArg : JvmFlag.values()) {
-      // skip gc mode skip we need to omit them all
-      if (gcModeMap.containsKey(missingArg)) {
-        continue;
-      }
 
       JvmSearchSpace.Builder searchSpaceBuilder = JvmSearchSpace.newBuilder();
       for (JvmFlag arg : JvmFlag.values()) {
         if (arg == missingArg) {
           continue;
-        }
-
-        if (gcModeMap.containsKey(arg)) {
-          searchSpaceBuilder.addGcMode(gcModeMap.get(arg));
-        } else if (boolCmdLineArguments.contains(arg)) {
-          searchSpaceBuilder.setField(argToProtoFieldMap.get(arg), Boolean.TRUE);
-        } else {
-          searchSpaceBuilder.setField(argToProtoFieldMap.get(arg), intRange);
         }
       }
       try {

@@ -49,12 +49,11 @@ message ProgramConfiguration {
   // What follows is a uniform structure for describing both.
   message JvmSearchSpace {
 
-    // The GC modes are mutally exclusive, so capture that fact in an enum
-    enum GcMode {
-      USE_CONC_MARK_SWEEP = 0;
-      USE_PARALLEL = 1;
-      USE_PARALLEL_OLD = 2;
-      USE_SERIAL = 3;
+    enum DeprecatedEnumA {
+      DEPRECATED_A = 0;
+      DEPRECATED_B = 1;
+      DEPRECATED_C = 2;
+      DEPRECATED_D = 3;
     }
 
     // Hold a specific value or a range of int64s.
@@ -78,18 +77,7 @@ message ProgramConfiguration {
                                         //  ignored if included with value
     }
 
-    // At some point in the future, these should be migrated to generic
-    // MessageSet based arguments which would be completely extensible.
-    // This was not done in mach 1 as most of the commandline abstraction
-    // is already built around the CommandLineArg abstraction - redesigning
-    // this would likely not allow us to finish the prototype within the
-    // task force. The generic MessageSet can be phased in later - either as
-    // an additional to existing arguments, or as a complete replacement.
-    // NOTE: these fields do not follow the same numbering scheme as the
-    // rest of the file as we expect to burn the range.
-    repeated GcMode gc_mode = 1;    // this is a series so that multiple modes
-                                    // can be searched over, though they are
-                                    // mutually exclusive on a given cmd line
+    repeated DeprecatedEnumA deprecated_field_a = 1;
     optional Int64Range adaptive_size_decrement_scale_factor = 2;
     optional Int64Range cms_exp_avg_factor = 3;
     optional Int64Range cms_incremental_duty_cycle = 4;
@@ -114,6 +102,13 @@ message ProgramConfiguration {
     optional bool cms_incremental_pacing = 23;
     optional bool use_cms_initiating_occupancy_only = 24;
     optional Int64Range soft_ref_lru_policy_ms_per_mb = 25;
+    optional bool use_serial_gc = 26;
+    optional bool use_parallel_gc = 27;
+    optional bool use_parallel_old_gc = 28;
+    optional bool use_par_new_gc = 29;
+    optional bool use_concurrent_mark_sweep_gc = 30;
+    // http://www.oracle.com/technetwork/tutorials/tutorials-1876574.html
+    // optional bool use_g1_gc = 31;
   }
 
   message DeprecatedMessageA {

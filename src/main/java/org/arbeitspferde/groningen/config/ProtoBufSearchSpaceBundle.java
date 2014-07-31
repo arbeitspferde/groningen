@@ -40,13 +40,6 @@ public class ProtoBufSearchSpaceBundle extends GenericSearchSpaceBundle {
    */
   public ProtoBufSearchSpaceBundle(final ProgramConfiguration.JvmSearchSpace protoSpace,
                                    final boolean requireAll) throws InvalidConfigurationException {
-
-    // initial param check - the rest of the CommandLineArgs will be checked
-    // their entry is instantiated
-    if (protoSpace.getGcModeCount() == 0 && requireAll) {
-      throw new InvalidConfigurationException("no gc mode specified");
-    }
-
     /*
      * Run through all the different enums
      *
@@ -139,34 +132,17 @@ public class ProtoBufSearchSpaceBundle extends GenericSearchSpaceBundle {
         protoSpace.hasSoftRefLruPolicyMsPerMb(), protoSpace.getSoftRefLruPolicyMsPerMb(),
         requireAll);
 
-    /*
-     * Finally deal with GC Mode
-     *
-     * We have a repeated list here so that we can select multiple gc modes over which to search.
-     * However, squashing these down to boolean values seems wrong.
-     *
-     * TODO(team): Really, we want to return a set of the available gc modes but need to
-     * understand implications on hypothesizer and the GA in general to see if that makes sense.
-     * Not for mach1.
-     */
-    if (protoSpace.getGcModeCount() == 0) {
-      // use the 'full' (it is boolean) search step to look over each gcmode
-      for (JvmFlag gcModeArg : JvmFlag.getGcModeArguments()) {
-        makeBoolEntry(gcModeArg, false, false, false);
-      }
-    } else {
-      /*
-       * this list is puny so we can do contains() searches on it even if we have a dumb user who
-       * puts lots of duplicates in their config....
-       *
-       * Essentially, we say we have a value to pin to - true if it is present, false otherwise.
-       */
-      List<ProgramConfiguration.JvmSearchSpace.GcMode> gcModes = protoSpace.getGcModeList();
-      for (ProgramConfiguration.JvmSearchSpace.GcMode mode :
-          ProgramConfiguration.JvmSearchSpace.GcMode.values()) {
-        makeBoolEntry(JvmFlag.getGcModeArgument(mode), true, gcModes.contains(mode), false);
-      }
-    }
+    makeBoolEntry(JvmFlag.USE_SERIAL_GC,
+        protoSpace.hasUseSerialGc(), protoSpace.getUseSerialGc(), requireAll);
+    makeBoolEntry(JvmFlag.USE_PARALLEL_GC,
+        protoSpace.hasUseParallelGc(), protoSpace.getUseParallelGc(), requireAll);
+    makeBoolEntry(JvmFlag.USE_PARALLEL_OLD_GC,
+        protoSpace.hasUseParallelOldGc(), protoSpace.getUseParallelOldGc(), requireAll);
+    makeBoolEntry(JvmFlag.USE_PAR_NEW_GC,
+        protoSpace.hasUseParNewGc(), protoSpace.getUseParNewGc(), requireAll);
+    makeBoolEntry(JvmFlag.USE_CONC_MARK_SWEEP_GC,
+        protoSpace.hasUseConcurrentMarkSweepGc(), protoSpace.getUseConcurrentMarkSweepGc(),
+        requireAll);
   }
 
   /**
