@@ -77,7 +77,7 @@ public class ExperimentDb {
     final StringBuilder output = new StringBuilder();
     output.append("ExperimentDb ").append(methodName).append(" :");
     spaceSeparator.appendTo(output, values);
-    log.info(output.toString());
+    log.finest(output.toString());
   }
 
   /** The logger is being made available so tests can add a handler */

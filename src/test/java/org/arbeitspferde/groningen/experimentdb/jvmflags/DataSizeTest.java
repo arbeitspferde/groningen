@@ -26,10 +26,6 @@ public class DataSizeTest extends TestCase {
     assertEquals("", DataSize.NONE.getSuffix());
   }
 
-  public void test_getSuffix_BYTE() {
-    assertEquals("b", DataSize.BYTE.getSuffix());
-  }
-
   public void test_getSuffix_KILO() {
     assertEquals("k", DataSize.KILO.getSuffix());
   }
@@ -46,19 +42,15 @@ public class DataSizeTest extends TestCase {
     assertEquals("", DataSize.NONE.unitFamilyAsRegexpString());
   }
 
-  public void test_unitFamilyAsRegexpString_BYTE() {
-    assertEquals("[bBkKmMgG]", DataSize.BYTE.unitFamilyAsRegexpString());
-  }
-
   public void test_unitFamilyAsRegexpString_KILO() {
-    assertEquals("[bBkKmMgG]", DataSize.KILO.unitFamilyAsRegexpString());
+    assertEquals("[kKmMgG]?", DataSize.KILO.unitFamilyAsRegexpString());
   }
 
   public void test_unitFamilyAsRegexpString_MEGA() {
-    assertEquals("[bBkKmMgG]", DataSize.MEGA.unitFamilyAsRegexpString());
+    assertEquals("[kKmMgG]?", DataSize.MEGA.unitFamilyAsRegexpString());
   }
 
   public void test_unitFamilyAsRegexpString_GIGA() {
-    assertEquals("[bBkKmMgG]", DataSize.GIGA.unitFamilyAsRegexpString());
+    assertEquals("[kKmMgG]?", DataSize.GIGA.unitFamilyAsRegexpString());
   }
 }

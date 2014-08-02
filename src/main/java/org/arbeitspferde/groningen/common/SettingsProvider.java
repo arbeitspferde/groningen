@@ -120,7 +120,7 @@ public class SettingsProvider implements Provider<Settings> {
 
   @Override
   public Settings get() {
-    log.info("Providing settings.");
+    log.finest("Providing settings.");
 
     final Collection<Field> annotated = findAnnotatedFields();
     final Collection<String> args4jWhitelist = makeArgs4jWhitelist(annotated);

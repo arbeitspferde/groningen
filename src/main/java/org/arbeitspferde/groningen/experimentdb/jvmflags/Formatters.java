@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 /**
  * A repository of {@link Formatter} implementations.
@@ -37,19 +38,21 @@ class Formatters {
    */
   static final Formatter INTEGER = new Formatter() {
     @Override
-    public String asArgumentString(final JvmFlag cla, final long value) {
+    public ImmutableList<String> asArgumentString(final JvmFlag cla, final long value) {
       Preconditions.checkNotNull(cla, "cla may not be null.");
+      Preconditions.checkState(cla.hasName(), "cla must have name");
 
-      return String.format("%s%s%s%s%s", cla.getHotSpotFlagType().getPrefix(), cla.getName(),
-          cla.getValueSeparator().getInfix(), value, cla.getDataSize().getSuffix());
+      return ImmutableList.of(String.format("%s%s%s%s%s", cla.getHotSpotFlagType().getPrefix(), cla.getName(),
+          cla.getValueSeparator().getInfix(), value, cla.getDataSize().getSuffix()));
     }
 
     @Override
-    public String asRegularExpressionString(final JvmFlag cla) {
+    public ImmutableList<String> asRegularExpressionString(final JvmFlag cla) {
       Preconditions.checkNotNull(cla, "cla may not be null.");
+      Preconditions.checkState(cla.hasName(), "cla must have name");
 
-      return String.format("%s%s%s\\d+%s\\b", cla.getHotSpotFlagType().getPrefix(), cla.getName(),
-        cla.getValueSeparator().getInfix(), cla.getDataSize().unitFamilyAsRegexpString());
+      return ImmutableList.of(String.format("%s%s%s\\d+%s\\b", cla.getHotSpotFlagType().getPrefix(), cla.getName(),
+        cla.getValueSeparator().getInfix(), cla.getDataSize().unitFamilyAsRegexpString()));
     }
   };
 
@@ -60,21 +63,45 @@ class Formatters {
     private final long TRUE_AS_LONG = 1;
 
     @Override
-    public String asArgumentString(final JvmFlag cla,
+    public ImmutableList<String> asArgumentString(final JvmFlag cla,
                                    final long value) {
       Preconditions.checkNotNull(cla, "cla may not be null.");
+      Preconditions.checkState(cla.hasName(), "cla must have name");
 
       final String plusOrMinus = value == TRUE_AS_LONG ? "+" : "-";
 
-      return String.format("%s%s%s", cla.getHotSpotFlagType().getPrefix(), plusOrMinus,
-        cla.getName());
+      return ImmutableList.of(String.format("%s%s%s", cla.getHotSpotFlagType().getPrefix(), plusOrMinus,
+          cla.getName()));
     }
 
     @Override
-    public String asRegularExpressionString(final JvmFlag cla) {
+    public ImmutableList<String> asRegularExpressionString(final JvmFlag cla) {
       Preconditions.checkNotNull(cla, "cla may not be null.");
+      Preconditions.checkState(cla.hasName(), "cla must have name");
 
-      return String.format("%s[+-]%s", cla.getHotSpotFlagType().getPrefix(), cla.getName());
+      return ImmutableList.of(String.format("%s[+-]%s", cla.getHotSpotFlagType().getPrefix(), cla.getName()));
     }
   };
+
+  static Formatter pinnedIntervalInteger(final String minimumName, final String maximumName) {
+    return new Formatter() {
+      @Override
+      public ImmutableList<String> asArgumentString(JvmFlag cla, long value) {
+        return ImmutableList.of(
+            String.format("%s%s%s%s%s", cla.getHotSpotFlagType().getPrefix(), minimumName,
+                cla.getValueSeparator().getInfix(), value, cla.getDataSize().getSuffix()),
+            String.format("%s%s%s%s%s", cla.getHotSpotFlagType().getPrefix(), maximumName,
+                cla.getValueSeparator().getInfix(), value, cla.getDataSize().getSuffix()));
+      }
+
+      @Override
+      public ImmutableList<String> asRegularExpressionString(JvmFlag cla) {
+        return ImmutableList.of(
+            String.format("%s%s%s\\d+%s\\b", cla.getHotSpotFlagType().getPrefix(), minimumName,
+                cla.getValueSeparator().getInfix(), cla.getDataSize().unitFamilyAsRegexpString()),
+            String.format("%s%s%s\\d+%s\\b", cla.getHotSpotFlagType().getPrefix(), maximumName,
+                cla.getValueSeparator().getInfix(), cla.getDataSize().unitFamilyAsRegexpString()));
+      }
+    };
+  }
 }

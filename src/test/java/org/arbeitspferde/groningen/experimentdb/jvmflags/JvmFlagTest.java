@@ -16,6 +16,8 @@
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 
+import com.google.common.collect.ImmutableList;
+
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -25,15 +27,15 @@ import java.util.List;
  */
 public class JvmFlagTest extends TestCase {
   public void test_asArgumentString_MAX_NEW_SIZE() {
-    final String actual = JvmFlag.MAX_NEW_SIZE.asArgumentString(1L);
+    final ImmutableList<String> actual = JvmFlag.MAX_NEW_SIZE.asArgumentString(1L);
 
-    assertEquals("-XX:MaxNewSize=1m", actual);
+    assertEquals(ImmutableList.of("-XX:MaxNewSize=1m"), actual);
   }
 
   public void test_asRegularExpressionString_MAX_NEW_SIZE() {
-    final String actual = JvmFlag.MAX_NEW_SIZE.asRegularExpressionString();
+    final ImmutableList<String> actual = JvmFlag.MAX_NEW_SIZE.asRegularExpressionString();
 
-    assertEquals("-XX:MaxNewSize=\\d+[bBkKmMgG]\\b", actual);
+    assertEquals(ImmutableList.of("-XX:MaxNewSize=\\d+[kKmMgG]?\\b"), actual);
   }
 
   public void test_validate_MAX_NEW_SIZE_InvalidValues() {

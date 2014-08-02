@@ -194,7 +194,7 @@ public class CommandLineTest extends TestCase {
   public void testToArgumentStringSanity() {
     final String result = p.toArgumentString();
 
-    assertEquals("-Xmx1024m -Xms1024m -XX:NewSize=8m -XX:MaxNewSize=8m -XX:SurvivorRatio=52 "
+    assertEquals("-Xms1024m -Xmx1024m -XX:NewSize=8m -XX:MaxNewSize=8m -XX:SurvivorRatio=52 "
         + "-XX:SoftRefLRUPolicyMSPerMB=2000 -XX:+UseConcMarkSweepGC "
         + "-XX:CMSInitiatingOccupancyFraction=3 -XX:-UseCMSInitiatingOccupancyOnly", result);
   }
@@ -364,9 +364,8 @@ public class CommandLineTest extends TestCase {
   }
 
   public void testRegularExpressionsMatch_MaxNewSize() {
-    assertMatchesNever("-XX:MaxNewSize=1");
-    assertMatchesNever("-XX:MaxNewSize=11");
-
+    assertMatchesOnce("-XX:MaxNewSize=1");
+    assertMatchesOnce("-XX:MaxNewSize=11");
     assertMatchesOnce("-XX:MaxNewSize=1k");
     assertMatchesOnce("-XX:MaxNewSize=1m");
     assertMatchesOnce("-XX:MaxNewSize=1g");
@@ -406,9 +405,8 @@ public class CommandLineTest extends TestCase {
   }
 
   public void testRegularExpressionsMatch_NewSize() {
-    assertMatchesNever("-XX:NewSize=1");
-    assertMatchesNever("-XX:NewSize=11");
-
+    assertMatchesOnce("-XX:NewSize=1");
+    assertMatchesOnce("-XX:NewSize=11");
     assertMatchesOnce("-XX:NewSize=1k");
     assertMatchesOnce("-XX:NewSize=1m");
     assertMatchesOnce("-XX:NewSize=1g");

@@ -15,6 +15,8 @@
 
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Provide standardized representation and validation of flags.
  *
@@ -30,7 +32,7 @@ interface Formatter {
    * @param value The value that the flag shall be set to.
    * @return The emitted formatted argument string.
    */
-  String asArgumentString(final JvmFlag cla, final long value);
+  ImmutableList<String> asArgumentString(final JvmFlag cla, final long value);
 
   /**
    * Provide a representation of the flag with possible values as a reg. exp.
@@ -38,5 +40,5 @@ interface Formatter {
    * @param cla The argument for which this formatter is used.
    * @return The regular expression representation.
    */
-  String asRegularExpressionString(final JvmFlag cla);
+  ImmutableList<String> asRegularExpressionString(final JvmFlag cla);
 }

@@ -56,34 +56,33 @@ public class CommandLine {
   // //depot/vendor_src/java/jdk/hotspot/src/share/vm/runtime/globals.hpp
   // boolean flags have the form -XX:[+-]<flag>
   private static final ImmutableList<String> MANAGED_ARGS_REGEXES = ImmutableList.<String>builder()
-      .add(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR.asRegularExpressionString())
-      .add(JvmFlag.CMS_EXP_AVG_FACTOR.asRegularExpressionString())
-      .add(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE.asRegularExpressionString())
-      .add(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE_MIN.asRegularExpressionString())
-      .add(JvmFlag.CMS_INCREMENTAL_OFFSET.asRegularExpressionString())
-      .add(JvmFlag.CMS_INCREMENTAL_SAFETY_FACTOR.asRegularExpressionString())
-      .add(JvmFlag.CMS_INITIATING_OCCUPANCY_FRACTION.asRegularExpressionString())
-      .add(JvmFlag.GC_TIME_RATIO.asRegularExpressionString())
-      .add(JvmFlag.MAX_GC_PAUSE_MILLIS.asRegularExpressionString())
-      .add(JvmFlag.MAX_HEAP_FREE_RATIO.asRegularExpressionString())
-      .add(JvmFlag.MAX_NEW_SIZE.asRegularExpressionString())
-      .add(JvmFlag.MIN_HEAP_FREE_RATIO.asRegularExpressionString())
-      .add(JvmFlag.NEW_RATIO.asRegularExpressionString())
-      .add(JvmFlag.NEW_SIZE.asRegularExpressionString())
-      .add(JvmFlag.PARALLEL_GC_THREADS.asRegularExpressionString())
-      .add(JvmFlag.SOFT_REF_LRU_POLICY_MS_PER_MB.asRegularExpressionString())
-      .add(JvmFlag.SURVIVOR_RATIO.asRegularExpressionString())
-      .add(JvmFlag.TENURED_GENERATION_SIZE_INCREMENT.asRegularExpressionString())
-      .add(JvmFlag.YOUNG_GENERATION_SIZE_INCREMENT.asRegularExpressionString())
-      .add(JvmFlag.CMS_INCREMENTAL_MODE.asRegularExpressionString())
-      .add(JvmFlag.CMS_INCREMENTAL_PACING.asRegularExpressionString())
-      .add(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY.asRegularExpressionString())
-      .add(JvmFlag.USE_CONC_MARK_SWEEP_GC.asRegularExpressionString())
-      .add(JvmFlag.USE_PARALLEL_GC.asRegularExpressionString())
-      .add(JvmFlag.USE_PARALLEL_OLD_GC.asRegularExpressionString())
-      .add(JvmFlag.USE_SERIAL_GC.asRegularExpressionString())
-      .add("-Xms\\d+[bBkKmMgG]?")
-      .add("-Xmx\\d+[bBkKmMgG]?")
+      .addAll(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_EXP_AVG_FACTOR.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE_MIN.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_INCREMENTAL_OFFSET.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_INCREMENTAL_SAFETY_FACTOR.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_INITIATING_OCCUPANCY_FRACTION.asRegularExpressionString())
+      .addAll(JvmFlag.GC_TIME_RATIO.asRegularExpressionString())
+      .addAll(JvmFlag.MAX_GC_PAUSE_MILLIS.asRegularExpressionString())
+      .addAll(JvmFlag.MAX_HEAP_FREE_RATIO.asRegularExpressionString())
+      .addAll(JvmFlag.MAX_NEW_SIZE.asRegularExpressionString())
+      .addAll(JvmFlag.MIN_HEAP_FREE_RATIO.asRegularExpressionString())
+      .addAll(JvmFlag.NEW_RATIO.asRegularExpressionString())
+      .addAll(JvmFlag.NEW_SIZE.asRegularExpressionString())
+      .addAll(JvmFlag.PARALLEL_GC_THREADS.asRegularExpressionString())
+      .addAll(JvmFlag.SOFT_REF_LRU_POLICY_MS_PER_MB.asRegularExpressionString())
+      .addAll(JvmFlag.SURVIVOR_RATIO.asRegularExpressionString())
+      .addAll(JvmFlag.TENURED_GENERATION_SIZE_INCREMENT.asRegularExpressionString())
+      .addAll(JvmFlag.YOUNG_GENERATION_SIZE_INCREMENT.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_INCREMENTAL_MODE.asRegularExpressionString())
+      .addAll(JvmFlag.CMS_INCREMENTAL_PACING.asRegularExpressionString())
+      .addAll(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY.asRegularExpressionString())
+      .addAll(JvmFlag.USE_CONC_MARK_SWEEP_GC.asRegularExpressionString())
+      .addAll(JvmFlag.USE_PARALLEL_GC.asRegularExpressionString())
+      .addAll(JvmFlag.USE_PARALLEL_OLD_GC.asRegularExpressionString())
+      .addAll(JvmFlag.USE_SERIAL_GC.asRegularExpressionString())
+      .addAll(JvmFlag.HEAP_SIZE.asRegularExpressionString())
       .build();
 
   /**
@@ -271,12 +270,12 @@ public class CommandLine {
     if (getMinHeapFreeRatio() <= getMaxHeapFreeRatio()) {
       if (getMinHeapFreeRatio() > 0) {
         JvmFlag.MIN_HEAP_FREE_RATIO.validate(getMinHeapFreeRatio());
-        argumentsBuilder.add(JvmFlag.MIN_HEAP_FREE_RATIO
+        argumentsBuilder.addAll(JvmFlag.MIN_HEAP_FREE_RATIO
             .asArgumentString(getMinHeapFreeRatio()));
       }
       if (getMaxHeapFreeRatio() > 0) {
         JvmFlag.MAX_HEAP_FREE_RATIO.validate(getMaxHeapFreeRatio());
-        argumentsBuilder.add(JvmFlag.MAX_HEAP_FREE_RATIO
+        argumentsBuilder.addAll(JvmFlag.MAX_HEAP_FREE_RATIO
             .asArgumentString(getMaxHeapFreeRatio()));
       }
     }
@@ -296,8 +295,7 @@ public class CommandLine {
     // generation) can grow to the limit of the virtual space as needed.
     if (getHeapSize() > 0) {
       JvmFlag.HEAP_SIZE.validate(getHeapSize());
-      argumentsBuilder.add(String.format("-Xmx%sm", getHeapSize()));
-      argumentsBuilder.add(String.format("-Xms%sm", getHeapSize()));
+      argumentsBuilder.addAll(JvmFlag.HEAP_SIZE.asArgumentString(getHeapSize()));
     }
 
 
@@ -320,7 +318,7 @@ public class CommandLine {
     // We assume that setting newRatio to 0 means ignore the setting
     if (getNewRatio() > 0) {
       JvmFlag.NEW_RATIO.validate(getNewRatio());
-      argumentsBuilder.add(JvmFlag.NEW_RATIO.asArgumentString(getNewRatio()));
+      argumentsBuilder.addAll(JvmFlag.NEW_RATIO.asArgumentString(getNewRatio()));
     } else
 
     // An eden bigger than half the virtually committed size of the heap is counterproductive. The
@@ -341,11 +339,11 @@ public class CommandLine {
       // The size is assumed to be in MB
       if (getNewSize() > 0) {
         JvmFlag.NEW_SIZE.validate(getNewSize());
-        argumentsBuilder.add(JvmFlag.NEW_SIZE.asArgumentString(getNewSize()));
+        argumentsBuilder.addAll(JvmFlag.NEW_SIZE.asArgumentString(getNewSize()));
         // Notice we are setting MaxNewSize to NewSize as this is a common thing
         // to do
         JvmFlag.MAX_NEW_SIZE.validate(getNewSize());
-        argumentsBuilder.add(JvmFlag.MAX_NEW_SIZE.asArgumentString(getNewSize()));
+        argumentsBuilder.addAll(JvmFlag.MAX_NEW_SIZE.asArgumentString(getNewSize()));
       }
     }
 
@@ -354,7 +352,7 @@ public class CommandLine {
     // this setting.
     if (getSurvivorRatio() > 0) {
       JvmFlag.SURVIVOR_RATIO.validate(getSurvivorRatio());
-      argumentsBuilder.add(JvmFlag.SURVIVOR_RATIO.asArgumentString(getSurvivorRatio()));
+      argumentsBuilder.addAll(JvmFlag.SURVIVOR_RATIO.asArgumentString(getSurvivorRatio()));
     }
 
     // Soft references are cleared less aggressively in the server virtual machine than the client.
@@ -366,7 +364,7 @@ public class CommandLine {
     // for 1 second for each megabyte of free space in the heap. This is very approximate.
     if (getSoftRefLruPolicyMsPerMb() > 0) {
       JvmFlag.SOFT_REF_LRU_POLICY_MS_PER_MB.validate(getSoftRefLruPolicyMsPerMb());
-      argumentsBuilder.add(JvmFlag.SOFT_REF_LRU_POLICY_MS_PER_MB
+      argumentsBuilder.addAll(JvmFlag.SOFT_REF_LRU_POLICY_MS_PER_MB
           .asArgumentString(getSoftRefLruPolicyMsPerMb()));
     }
 
@@ -379,7 +377,7 @@ public class CommandLine {
       // collector when the application is running. Typically applications which have a relatively
       // large set of long-lived data (a large tenured generation), and run on machines with two
       // or more processors tend to benefit from the use of this collector.
-      argumentsBuilder.add(JvmFlag.USE_CONC_MARK_SWEEP_GC.asArgumentString(TRUE_AS_LONG));
+      argumentsBuilder.addAll(JvmFlag.USE_CONC_MARK_SWEEP_GC.asArgumentString(TRUE_AS_LONG));
 
       // Normally, the concurrent collector uses one processor for the concurrent work for the
       // entire concurrent mark phase, without (voluntarily) relinquishing it.  Similarly, one
@@ -395,12 +393,12 @@ public class CommandLine {
       // can automatically compute the duty cycle based on the behavior of the application (the
       // recommended method), or the duty cycle can be set to a fixed value on the command line.
       if (getCmsIncrementalMode()) {
-        argumentsBuilder.add(JvmFlag.CMS_INCREMENTAL_MODE.asArgumentString(TRUE_AS_LONG));
+        argumentsBuilder.addAll(JvmFlag.CMS_INCREMENTAL_MODE.asArgumentString(TRUE_AS_LONG));
 
         // This flag enables automatic adjustment of the incremental mode duty cycle based on
         // statistics collected while the JVM is running.
         if (getCmsIncrementalPacing()) {
-          argumentsBuilder.add(JvmFlag.CMS_INCREMENTAL_PACING.asArgumentString(TRUE_AS_LONG));
+          argumentsBuilder.addAll(JvmFlag.CMS_INCREMENTAL_PACING.asArgumentString(TRUE_AS_LONG));
           // This is the percentage (0-100) which is the lower bound on the duty
           // cycle when
           // CMSIncrementalPacing is enabled.
@@ -408,7 +406,7 @@ public class CommandLine {
           // We assume that setting this to 0 means ignore the setting
           if (getCmsIncrementalDutyCycleMin() > 0) {
             JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE_MIN.validate(getCmsIncrementalDutyCycle());
-            argumentsBuilder.add(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE_MIN
+            argumentsBuilder.addAll(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE_MIN
                 .asArgumentString(getCmsIncrementalDutyCycleMin()));
           }
         }
@@ -419,7 +417,7 @@ public class CommandLine {
         // We assume that setting this to 0 means ignore the setting
         if (getCmsExpAvgFactor() > 0) {
           JvmFlag.CMS_EXP_AVG_FACTOR.validate(getCmsExpAvgFactor());
-          argumentsBuilder.add(JvmFlag.CMS_EXP_AVG_FACTOR
+          argumentsBuilder.addAll(JvmFlag.CMS_EXP_AVG_FACTOR
               .asArgumentString(getCmsExpAvgFactor()));
         }
 
@@ -430,7 +428,7 @@ public class CommandLine {
         // We assume that setting this to 0 means ignore the setting
         if (getCmsIncrementalDutyCycle() > 0) {
           JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE.validate(getCmsIncrementalDutyCycle());
-          argumentsBuilder.add(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE
+          argumentsBuilder.addAll(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE
               .asArgumentString(getCmsIncrementalDutyCycle()));
         }
 
@@ -440,14 +438,14 @@ public class CommandLine {
         // We assume that setting this to 0 means ignore the setting
         if (getCmsIncrementalOffset() > 0) {
           JvmFlag.CMS_INCREMENTAL_OFFSET.validate(getCmsIncrementalOffset());
-          argumentsBuilder.add(JvmFlag.CMS_INCREMENTAL_OFFSET
+          argumentsBuilder.addAll(JvmFlag.CMS_INCREMENTAL_OFFSET
               .asArgumentString(getCmsIncrementalOffset()));
         }
 
         // This is the percentage (0-100) used to add conservatism when computing the duty cycle.
         if (getCmsIncrementalSafetyFactor() > 0) {
           JvmFlag.CMS_INCREMENTAL_SAFETY_FACTOR.validate(getCmsIncrementalSafetyFactor());
-          argumentsBuilder.add(JvmFlag.CMS_INCREMENTAL_SAFETY_FACTOR
+          argumentsBuilder.addAll(JvmFlag.CMS_INCREMENTAL_SAFETY_FACTOR
               .asArgumentString(getCmsIncrementalSafetyFactor()));
         }
       }
@@ -457,14 +455,14 @@ public class CommandLine {
       // GC in the tenured generation.
       if (getCmsInitiatingOccupancyFraction() > 0) {
         JvmFlag.CMS_INITIATING_OCCUPANCY_FRACTION.validate(getCmsInitiatingOccupancyFraction());
-        argumentsBuilder.add(JvmFlag.CMS_INITIATING_OCCUPANCY_FRACTION
+        argumentsBuilder.addAll(JvmFlag.CMS_INITIATING_OCCUPANCY_FRACTION
             .asArgumentString((getCmsInitiatingOccupancyFraction())));
         // This parameter tells the JVM to use only the value defined by
         // -XX:CMSInitiatingOccupancyFraction, rather than try to also calculate
         // the value at
         // runtime.
 
-        argumentsBuilder.add(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY
+        argumentsBuilder.addAll(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY
             .asArgumentString(getUseCmsInitiatingOccupancyOnly() ? TRUE_AS_LONG : FALSE_AS_LONG));
       }
     } else if (getUseParallelGC() || getUseParallelOldGC()) {
@@ -482,12 +480,12 @@ public class CommandLine {
       // than 2 CPUs.
 
       // Young Generation GC done in parallel threads
-      argumentsBuilder.add(JvmFlag.USE_PARALLEL_GC.asArgumentString(
+      argumentsBuilder.addAll(JvmFlag.USE_PARALLEL_GC.asArgumentString(
           getUseParallelGC() ? TRUE_AS_LONG : FALSE_AS_LONG));
 
       // Certain phases of an ‘Old Generation’ collection can be performed in parallel, speeding
       // up a old generation collection.
-      argumentsBuilder.add(JvmFlag.USE_PARALLEL_OLD_GC.asArgumentString(getUseParallelOldGC()
+      argumentsBuilder.addAll(JvmFlag.USE_PARALLEL_OLD_GC.asArgumentString(getUseParallelOldGC()
           ? TRUE_AS_LONG : FALSE_AS_LONG));
 
       // Growing and shrinking the size of a generation is done by increments that are a fixed
@@ -500,12 +498,12 @@ public class CommandLine {
       // We assume 0 means ignore the setting.
       if (getYoungGenerationSizeIncrement() > 0) {
         JvmFlag.YOUNG_GENERATION_SIZE_INCREMENT.validate(getYoungGenerationSizeIncrement());
-        argumentsBuilder.add(JvmFlag.YOUNG_GENERATION_SIZE_INCREMENT
+        argumentsBuilder.addAll(JvmFlag.YOUNG_GENERATION_SIZE_INCREMENT
             .asArgumentString(getYoungGenerationSizeIncrement()));
       }
       if (getTenuredGenerationSizeIncrement() > 0) {
         JvmFlag.TENURED_GENERATION_SIZE_INCREMENT.validate(getTenuredGenerationSizeIncrement());
-        argumentsBuilder.add(JvmFlag.TENURED_GENERATION_SIZE_INCREMENT
+        argumentsBuilder.addAll(JvmFlag.TENURED_GENERATION_SIZE_INCREMENT
             .asArgumentString(getTenuredGenerationSizeIncrement()));
       }
 
@@ -517,7 +515,7 @@ public class CommandLine {
       if (getAdaptiveSizeDecrementScaleFactor() > 0) {
         JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR
             .validate(getAdaptiveSizeDecrementScaleFactor());
-        argumentsBuilder.add(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR
+        argumentsBuilder.addAll(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR
             .asArgumentString(getAdaptiveSizeDecrementScaleFactor()));
       }
 
@@ -527,7 +525,7 @@ public class CommandLine {
       // We assume that setting this to 0 means ignore the setting
       if (getGcTimeRatio() > 0) {
         JvmFlag.GC_TIME_RATIO.validate(getGcTimeRatio());
-        argumentsBuilder.add(JvmFlag.GC_TIME_RATIO.asArgumentString(getGcTimeRatio()));
+        argumentsBuilder.addAll(JvmFlag.GC_TIME_RATIO.asArgumentString(getGcTimeRatio()));
       }
 
       // This is interpreted as a hint to the throughput collector that pause times of <nnn>
@@ -540,7 +538,7 @@ public class CommandLine {
       // We assume that setting this to 0 means ignore the setting
       if (getMaxHeapFreeRatio() > 0) {
         JvmFlag.MAX_GC_PAUSE_MILLIS.validate(getMaxGcPauseMillis());
-        argumentsBuilder.add(JvmFlag.MAX_GC_PAUSE_MILLIS
+        argumentsBuilder.addAll(JvmFlag.MAX_GC_PAUSE_MILLIS
             .asArgumentString(getMaxGcPauseMillis()));
       }
 
@@ -548,7 +546,7 @@ public class CommandLine {
       // command line option. We assume 0 implies do not set this parameter.
       if (getParallelGCThreads() > 0) {
         JvmFlag.PARALLEL_GC_THREADS.validate(getParallelGCThreads());
-        argumentsBuilder.add(JvmFlag.PARALLEL_GC_THREADS
+        argumentsBuilder.addAll(JvmFlag.PARALLEL_GC_THREADS
             .asArgumentString(getParallelGCThreads()));
       }
     } else if (getUseSerialGC()) {
@@ -559,7 +557,7 @@ public class CommandLine {
       // inversely proportional to the size of the heap.
       //
       // It is the best choice for a single CPU and a small heap.
-      argumentsBuilder.add(JvmFlag.USE_SERIAL_GC.asArgumentString(TRUE_AS_LONG));
+      argumentsBuilder.addAll(JvmFlag.USE_SERIAL_GC.asArgumentString(TRUE_AS_LONG));
     }
 
     final String emission = spaceSeparator.join(argumentsBuilder.build());

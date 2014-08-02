@@ -29,11 +29,6 @@ enum DataSize {
   NONE(""),
 
   /**
-   * The units are in bytes.
-   */
-  BYTE("b"),
-
-  /**
    * The units are in kilobytes.
    */
   KILO("k"),
@@ -94,7 +89,7 @@ enum DataSize {
     for (final DataSize dataSize : values()) {
       builder.append(dataSize.suffixToRegexpString());
     }
-    builder.append("]");
+    builder.append("]?");
 
     DATASIZE_SUFFIX_REGEXP = builder.toString();
   }

@@ -15,7 +15,7 @@ class Validators {
       Preconditions.checkArgument(
           cla.getAcceptableValueRange().contains(proposedValue),
           "The flag %s with range %s cannot contain proposed value %s.",
-          cla.getName(), cla.getAcceptableValueRange(),
+          cla, cla.getAcceptableValueRange(),
           proposedValue);
       }
   };

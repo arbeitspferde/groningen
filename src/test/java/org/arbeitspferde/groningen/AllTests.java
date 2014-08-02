@@ -42,6 +42,7 @@ import org.arbeitspferde.groningen.experimentdb.jvmflags.FormattersTest;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.HotSpotFlagTypeTest;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSetTest;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagTest;
+import org.arbeitspferde.groningen.experimentdb.jvmflags.ValidatorsTest;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.ValueSeparatorTest;
 import org.arbeitspferde.groningen.generator.GeneratorTest;
 import org.arbeitspferde.groningen.hypothesizer.HypothesizerTest;
@@ -108,6 +109,7 @@ public class AllTests extends TestSuite{
     suite.addTestSuite(JvmFlagSetTest.class);
     suite.addTestSuite(JvmFlagTest.class);
     suite.addTestSuite(ValueSeparatorTest.class);
+    suite.addTestSuite(ValidatorsTest.class);
 
     // org.arbeitspferde.groningen.generator tests
     suite.addTestSuite(GeneratorTest.class);

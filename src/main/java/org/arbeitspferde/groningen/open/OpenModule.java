@@ -72,7 +72,7 @@ public class OpenModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    log.info("Binding open injectables.");
+    log.finest("Binding open injectables.");
 
     MapBinder<String, Datastore> datastoreBinder = MapBinder.newMapBinder(binder(), String.class,
         Datastore.class);

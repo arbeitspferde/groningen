@@ -15,7 +15,9 @@
 
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Range;
 
@@ -34,10 +36,8 @@ public enum JvmFlag {
   // Hypothesizer adds one to
   // this value and generates a random value from 0 inclusive to
   // Integer.MAX_VALUE exclusive.
-
-  // TODO(team): Look at better ways of implementing this.
-  HEAP_SIZE("<special-never-should-be-exposed>", HotSpotFlagType.NON_STANDARD, 1L, 64 * 1024L, 1L,
-    DataSize.MEGA, ValueSeparator.NONE),
+  HEAP_SIZE(HotSpotFlagType.NON_STANDARD, 1L, 64 * 1024L, 1L,
+    DataSize.MEGA, ValueSeparator.NONE, Formatters.pinnedIntervalInteger("ms", "mx")),
 
   ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR("AdaptiveSizeDecrementScaleFactor",
       HotSpotFlagType.UNSTABLE, 0L, 100L, 1L, DataSize.NONE, ValueSeparator.EQUAL),
@@ -114,7 +114,7 @@ public enum JvmFlag {
    * The human-readable flag name that excludes the flag-specific argument
    * prefix, infix, suffix, and respective assignment value.
    */
-  private final String name;
+  private final Optional<String> name;
 
   /**
    * The type of flag that the flag is.
@@ -175,7 +175,7 @@ public enum JvmFlag {
    * @param hotSpotFlagType The type of the flag.
    */
   private JvmFlag(final String name, final HotSpotFlagType hotSpotFlagType) {
-    this.name = Preconditions.checkNotNull(name, "name may not be null.");
+    this.name = Optional.of(name);
     this.hotSpotFlagType = Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
 
     formatter = Formatters.BOOLEAN;
@@ -200,7 +200,7 @@ public enum JvmFlag {
   JvmFlag(final String name, final HotSpotFlagType hotSpotFlagType, final Long minimum,
       final Long maximum, final Long stepSize, final DataSize dataSize,
       final ValueSeparator valueSeparator) {
-    this.name = Preconditions.checkNotNull(name, "name may not be null.");
+    this.name = Optional.of(name);
     this.hotSpotFlagType = Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
     floorValue = Preconditions.checkNotNull(minimum, "minimum may not be null.");
     ceilingValue = Preconditions.checkNotNull(maximum, "maximum may not be null.");
@@ -213,8 +213,35 @@ public enum JvmFlag {
     acceptableValueRange = Range.closed(minimum, maximum);
   }
 
-   String getName() {
-    return name;
+  /**
+   * Construct a new integer flag.
+   *
+   * @param hotSpotFlagType The type of the flag.
+   * @param minimum The minimum value.
+   * @param maximum The maximum value.
+   * @param stepSize The increment between values.
+   */
+  JvmFlag(final HotSpotFlagType hotSpotFlagType, final Long minimum,
+          final Long maximum, final Long stepSize, final DataSize dataSize,
+          final ValueSeparator valueSeparator, final Formatter formatter) {
+    name = Optional.absent();
+    this.hotSpotFlagType = Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
+    floorValue = Preconditions.checkNotNull(minimum, "minimum may not be null.");
+    ceilingValue = Preconditions.checkNotNull(maximum, "maximum may not be null.");
+    this.stepSize = Preconditions.checkNotNull(stepSize, "stepSize may not be null.");
+    this.dataSize = Preconditions.checkNotNull(dataSize, "dataSize may not be null.");
+    this.valueSeparator = Preconditions.checkNotNull(valueSeparator, "valueSeparator may not be null.");
+    this.formatter = Preconditions.checkNotNull(formatter, "formatter may not be null.");
+    validator = Validators.INTEGER;
+    acceptableValueRange = Range.closed(minimum, maximum);
+  }
+
+  boolean hasName() {
+    return name.isPresent();
+  }
+
+  String getName() {
+    return name.get();
   }
 
   HotSpotFlagType getHotSpotFlagType() {
@@ -251,7 +278,7 @@ public enum JvmFlag {
    * @param value The value that should be represented in string form.
    * @return The String representation.
    */
-  public String asArgumentString(final Long value) {
+  public ImmutableList<String> asArgumentString(final Long value) {
     return formatter.asArgumentString(this, value);
   }
 
@@ -260,7 +287,7 @@ public enum JvmFlag {
    *
    * @return The String representation.
    */
-  public String asRegularExpressionString() {
+  public ImmutableList<String> asRegularExpressionString() {
     return formatter.asRegularExpressionString(this);
   }
 
