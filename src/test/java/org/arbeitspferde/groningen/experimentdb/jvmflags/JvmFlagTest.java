@@ -70,10 +70,4 @@ public class JvmFlagTest extends TestCase {
     assertEquals(JvmFlag.USE_PARALLEL_OLD_GC, JvmFlag.getGcModeArgument(GcMode.PARALLEL_OLD));
     assertEquals(JvmFlag.USE_SERIAL_GC, JvmFlag.getGcModeArgument(GcMode.SERIAL));
   }
-
-  public void test_asAcceptableValuesString_MAX_NEW_SIZE() {
-    final String actual = JvmFlag.MAX_NEW_SIZE.asAcceptableValuesString();
-
-    assertEquals("[0\u202532768]", actual);
-  }
 }

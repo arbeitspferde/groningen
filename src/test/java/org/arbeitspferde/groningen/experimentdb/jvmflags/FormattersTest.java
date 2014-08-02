@@ -24,49 +24,49 @@ import junit.framework.TestCase;
 public class FormattersTest extends TestCase {
   public void test_INTEGER_FORMATTER_asArgumentString_DisallowsNullArguments() {
     try {
-      Formatters.INTEGER_FORMATTER.asArgumentString(null, 0L);
-      fail("Formatters.INTEGER_FORMATTER should disallow null arguments.");
+      Formatters.INTEGER.asArgumentString(null, 0L);
+      fail("Formatters.INTEGER should disallow null arguments.");
     } catch (final NullPointerException e) {
     }
   }
 
   public void test_INTEGER_FORMATTER_asArgumentString_AdaptiveSizeDecrementScaleFactor() {
-    final String actual = Formatters.INTEGER_FORMATTER.asArgumentString(
+    final String actual = Formatters.INTEGER.asArgumentString(
         JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 2L);
 
     assertEquals("-XX:AdaptiveSizeDecrementScaleFactor=2", actual);
   }
 
   public void test_INTEGER_FORMATTER_asArgumentString_MaxNewSize() {
-    final String actual = Formatters.INTEGER_FORMATTER.asArgumentString(
+    final String actual = Formatters.INTEGER.asArgumentString(
         JvmFlag.MAX_NEW_SIZE, 3L);
 
     assertEquals("-XX:MaxNewSize=3m", actual);
   }
 
   public void test_INTEGER_FORMATTER_asRegularExpression_AdaptiveSizeDecrementFactor() {
-    final String actual = Formatters.INTEGER_FORMATTER.asRegularExpressionString(
+    final String actual = Formatters.INTEGER.asRegularExpressionString(
         JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR);
 
     assertEquals("-XX:AdaptiveSizeDecrementScaleFactor=\\d+\\b", actual);
   }
 
   public void test_INTEGER_FORMATTER_asRegularExpression_MaxNewSize() {
-    final String actual = Formatters.INTEGER_FORMATTER.asRegularExpressionString(
+    final String actual = Formatters.INTEGER.asRegularExpressionString(
         JvmFlag.MAX_NEW_SIZE);
 
     assertEquals("-XX:MaxNewSize=\\d+[bBkKmMgG]\\b", actual);
   }
 
   public void test_INTEGER_FORMATTER_asAcceptableValuesString_AdaptiveSizeDecrementFactor() {
-    final String actual = Formatters.INTEGER_FORMATTER.asAcceptableValuesString(
+    final String actual = Formatters.INTEGER.asAcceptableValuesString(
         JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR);
 
     assertEquals("[0\u2025100]", actual);
   }
 
   public void test_INTEGER_FORMATTER_asAcceptableValuesString_MaxNewSize() {
-    final String actual = Formatters.INTEGER_FORMATTER.asAcceptableValuesString(
+    final String actual = Formatters.INTEGER.asAcceptableValuesString(
         JvmFlag.MAX_NEW_SIZE);
 
     assertEquals("[0\u202532768]", actual);
@@ -74,13 +74,13 @@ public class FormattersTest extends TestCase {
 
   public void test_INTEGER_FORMATTER_validate_AdaptiveSizeDecrementFactor_InvalidValues() {
     try {
-      Formatters.INTEGER_FORMATTER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, -1L);
+      Formatters.INTEGER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, -1L);
       fail("JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR disallows -1.");
     } catch (final IllegalArgumentException e) {
     }
 
     try {
-      Formatters.INTEGER_FORMATTER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 101L);
+      Formatters.INTEGER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 101L);
       fail("JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR disallows 101.");
     } catch (final IllegalArgumentException e) {
     }
@@ -88,19 +88,19 @@ public class FormattersTest extends TestCase {
 
   public void test_INTEGER_FORMATTER_validate_AdaptiveSizeDecrementFactor_ValidValues() {
     try {
-      Formatters.INTEGER_FORMATTER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 1L);
+      Formatters.INTEGER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 1L);
     } catch (final IllegalArgumentException e) {
       fail("JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR allows 1.");
     }
 
     try {
-      Formatters.INTEGER_FORMATTER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 50L);
+      Formatters.INTEGER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 50L);
     } catch (final IllegalArgumentException e) {
       fail("JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR allows 50");
     }
 
     try {
-      Formatters.INTEGER_FORMATTER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 100L);
+      Formatters.INTEGER.validate(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 100L);
     } catch (final IllegalArgumentException e) {
       fail("JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR allows 100");
     }
@@ -108,35 +108,35 @@ public class FormattersTest extends TestCase {
 
   public void test_BOOLEAN_FORMATTER_asArgumentString_DisallowsNullArguments() {
     try {
-      Formatters.BOOLEAN_FORMATTER.asArgumentString(null, 0L);
-      fail("Formatters.BOOLEAN_FORMATTER should disallow null arguments.");
+      Formatters.BOOLEAN.asArgumentString(null, 0L);
+      fail("Formatters.BOOLEAN should disallow null arguments.");
     } catch (final NullPointerException e) {
     }
   }
 
   public void test_BOOLEAN_FORMATTER_asArgumentString_CMSIncrementalMode_true() {
-    final String actual = Formatters.BOOLEAN_FORMATTER.asArgumentString(
+    final String actual = Formatters.BOOLEAN.asArgumentString(
       JvmFlag.CMS_INCREMENTAL_MODE, 1L);
 
     assertEquals("-XX:+CMSIncrementalMode", actual);
   }
 
   public void test_BOOLEAN_FORMATTER_asArgumentString_CMSIncrementalMode_false() {
-    final String actual = Formatters.BOOLEAN_FORMATTER.asArgumentString(
+    final String actual = Formatters.BOOLEAN.asArgumentString(
       JvmFlag.CMS_INCREMENTAL_MODE, 0L);
 
     assertEquals("-XX:-CMSIncrementalMode", actual);
   }
 
   public void test_BOOLEAN_FORMATTER_asRegularExpression_CMSIncrementalMode() {
-    final String actual = Formatters.BOOLEAN_FORMATTER.asRegularExpressionString(
+    final String actual = Formatters.BOOLEAN.asRegularExpressionString(
       JvmFlag.CMS_INCREMENTAL_MODE);
 
     assertEquals("-XX:[+-]CMSIncrementalMode", actual);
   }
 
   public void test_BOOLEAN_FORMATTER_asAcceptableValuesString_CMSIncrementalMode() {
-    final String actual = Formatters.BOOLEAN_FORMATTER.asAcceptableValuesString(
+    final String actual = Formatters.BOOLEAN.asAcceptableValuesString(
       JvmFlag.CMS_INCREMENTAL_MODE);
 
     assertEquals("{0 (false), 1 (true)}", actual);
@@ -144,13 +144,13 @@ public class FormattersTest extends TestCase {
 
   public void test_BOOLEAN_FORMATTER_validate_CMSIncrementalMode_InvalidValues() {
     try {
-      Formatters.BOOLEAN_FORMATTER.validate(JvmFlag.CMS_INCREMENTAL_MODE, -1L);
+      Formatters.BOOLEAN.validate(JvmFlag.CMS_INCREMENTAL_MODE, -1L);
       fail("JvmFlags.CMS_INCREMENTAL_MODE disallows -1.");
     } catch (final IllegalArgumentException e) {
     }
 
     try {
-      Formatters.BOOLEAN_FORMATTER.validate(JvmFlag.CMS_INCREMENTAL_MODE, 2L);
+      Formatters.BOOLEAN.validate(JvmFlag.CMS_INCREMENTAL_MODE, 2L);
       fail("JvmFlags.CMS_INCREMENTAL_MODE disallows 2.");
     } catch (final IllegalArgumentException e) {
     }
@@ -158,13 +158,13 @@ public class FormattersTest extends TestCase {
 
   public void test_BOOLEAN_FORMATTER_validate_CMSIncrementalMode_ValidValues() {
     try {
-      Formatters.BOOLEAN_FORMATTER.validate(JvmFlag.CMS_INCREMENTAL_MODE, 0L);
+      Formatters.BOOLEAN.validate(JvmFlag.CMS_INCREMENTAL_MODE, 0L);
     } catch (final IllegalArgumentException e) {
       fail("JvmFlags.CMS_INCREMENTAL_MODE allows 0.");
     }
 
     try {
-      Formatters.BOOLEAN_FORMATTER.validate(JvmFlag.CMS_INCREMENTAL_MODE, 1L);
+      Formatters.BOOLEAN.validate(JvmFlag.CMS_INCREMENTAL_MODE, 1L);
     } catch (final IllegalArgumentException e) {
       fail("JvmFlags.CMS_INCREMENTAL_MODE allows 1.");
     }

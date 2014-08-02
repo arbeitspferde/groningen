@@ -39,24 +39,4 @@ interface Formatter {
    * @return The regular expression representation.
    */
   String asRegularExpressionString(final JvmFlag cla);
-
-  /**
-   * Provide a representation of the acceptable values the flag may be set to.
-   *
-   * @param cla The argument for which this formatter is used.
-   * @return The valid value representation.
-   */
-  String asAcceptableValuesString(final JvmFlag cla);
-
-  /**
-   * Verify that the proposed value is acceptable.
-   *
-   * Implementors should include information in the thrown exception about why
-   * proposedValue is unacceptable.
-   *
-   * @param cla The argument for which this formatter is used.
-   * @param proposedValue The value to verify.
-   * @throws IllegalArgumentException if proposedValue is unacceptable.
-   */
-  void validate(final JvmFlag cla, final long proposedValue) throws IllegalArgumentException;
 }

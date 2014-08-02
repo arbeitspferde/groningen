@@ -127,6 +127,11 @@ public enum JvmFlag {
   private final Formatter formatter;
 
   /**
+   * The {@link Validator} flyweight.
+   */
+  private final Validator validator;
+
+  /**
    * The minimum acceptable value for the flag.
    */
   private final Long floorValue;
@@ -173,7 +178,8 @@ public enum JvmFlag {
     this.name = Preconditions.checkNotNull(name, "name may not be null.");
     this.hotSpotFlagType = Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
 
-    formatter = Formatters.BOOLEAN_FORMATTER;
+    formatter = Formatters.BOOLEAN;
+    validator = Validators.BOOLEAN;
     floorValue = 0L;
     ceilingValue = 1L;
     stepSize = 1L;
@@ -202,7 +208,8 @@ public enum JvmFlag {
     this.dataSize = Preconditions.checkNotNull(dataSize, "dataSize may not be null.");
     this.valueSeparator = Preconditions.checkNotNull(valueSeparator, "valueSeparator may not be null.");
 
-    formatter = Formatters.INTEGER_FORMATTER;
+    formatter = Formatters.INTEGER;
+    validator = Validators.INTEGER;
     acceptableValueRange = Range.closed(minimum, maximum);
   }
 
@@ -212,10 +219,6 @@ public enum JvmFlag {
 
   HotSpotFlagType getHotSpotFlagType() {
     return hotSpotFlagType;
-  }
-
-  Formatter getFormatter() {
-    return formatter;
   }
 
   public long getMinimum() {
@@ -249,7 +252,7 @@ public enum JvmFlag {
    * @return The String representation.
    */
   public String asArgumentString(final Long value) {
-    return getFormatter().asArgumentString(this, value);
+    return formatter.asArgumentString(this, value);
   }
 
   /**
@@ -258,16 +261,7 @@ public enum JvmFlag {
    * @return The String representation.
    */
   public String asRegularExpressionString() {
-    return getFormatter().asRegularExpressionString(this);
-  }
-
-  /**
-   * Provide a representation of the allowed values as String.
-   *
-   * @return The String representation.
-   */
-  public String asAcceptableValuesString() {
-    return getFormatter().asAcceptableValuesString(this);
+    return formatter.asRegularExpressionString(this);
   }
 
   /**
@@ -277,7 +271,7 @@ public enum JvmFlag {
    * @throws IllegalArgumentException In case of a bad argument.
    */
   public void validate(final Long proposedValue) throws IllegalArgumentException {
-    getFormatter().validate(this, proposedValue);
+    validator.validate(this, proposedValue);
   }
 
   /**

@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Range;
 
 /**
  * A repository of {@link Formatter} implementations.
@@ -31,19 +30,12 @@ class Formatters {
   /**
    * Utility class; no instantiation allowed!
    */
-  private Formatters() {
-  }
+  private Formatters() {}
 
   /**
    * Provide a representation and validations for integer-based JVM Flags.
    */
-  static final Formatter INTEGER_FORMATTER = new Formatter() {
-    /**
-     * Validate that numeric values are in the acceptable range for {@link Integer}.
-     */
-    private final Range<Long> inherentAcceptableValues = Range.closed((long) Integer.MIN_VALUE,
-      (long) Integer.MAX_VALUE);
-
+  static final Formatter INTEGER = new Formatter() {
     @Override
     public String asArgumentString(final JvmFlag cla, final long value) {
       Preconditions.checkNotNull(cla, "cla may not be null.");
@@ -59,34 +51,13 @@ class Formatters {
       return String.format("%s%s%s\\d+%s\\b", cla.getHotSpotFlagType().getPrefix(), cla.getName(),
         cla.getValueSeparator().getInfix(), cla.getDataSize().unitFamilyAsRegexpString());
     }
-
-    @Override
-    public String asAcceptableValuesString(final JvmFlag cla) {
-      Preconditions.checkNotNull(cla, "cla may not be null.");
-
-      return cla.getAcceptableValueRange().toString();
-    }
-
-    @Override
-    public void validate(final JvmFlag cla, final long proposedValue)
-        throws IllegalArgumentException {
-      Preconditions.checkNotNull(cla, "cla may not be null.");
-      Preconditions.checkArgument(inherentAcceptableValues.contains(proposedValue));
-      Preconditions.checkArgument(
-          cla.getAcceptableValueRange().contains(proposedValue),
-          "The flag %s with range %s cannot contain proposed value %s.",
-          cla.getName(), cla.getAcceptableValueRange(),
-          proposedValue);
-    }
   };
 
   /**
    * Provide a representation and validations for boolean-based JVM Flags.
    */
-  static final Formatter BOOLEAN_FORMATTER = new Formatter() {
+  static final Formatter BOOLEAN = new Formatter() {
     private final long TRUE_AS_LONG = 1;
-
-    private final Range<Long> inherentAcceptableValues = Range.closed(0L, 1L);
 
     @Override
     public String asArgumentString(final JvmFlag cla,
@@ -105,20 +76,5 @@ class Formatters {
 
       return String.format("%s[+-]%s", cla.getHotSpotFlagType().getPrefix(), cla.getName());
     }
-
-    @Override
-    public String asAcceptableValuesString(final JvmFlag cla) {
-      Preconditions.checkNotNull(cla, "cla may not be null.");
-
-      return "{0 (false), 1 (true)}";
-    }
-
-    @Override
-    public void validate(final JvmFlag cla, final long proposedValue)
-        throws IllegalArgumentException {
-      Preconditions.checkNotNull(cla, "cla may not be null.");
-      Preconditions.checkArgument(inherentAcceptableValues.contains(proposedValue));
-    }
   };
-
 }
